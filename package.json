@@ -2,7 +2,7 @@
   "name": "debounce-promise",
   "version": "1.0.1",
   "description": "",
-  "main": "./dist/index.js",
+  "main": "dist/index",
   "scripts": {
     "test": "babel-tap test && eslint .",
     "lint": "eslint .",
