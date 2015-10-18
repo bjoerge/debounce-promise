@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "id-length": [2, {"exceptions": ["t"]}],
+    "arrow-parens": 1 // currently broken with async functions
+  }
+}
