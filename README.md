@@ -1,4 +1,6 @@
-# debounce-promise
+# debounce-promise [![Build Status](https://travis-ci.org/bjoerge/debounce-promise.svg)](https://travis-ci.org/bjoerge/debounce-promise)
+
+[![NPM](https://nodei.co/npm/debounce-promise.png)](https://nodei.co/npm/debounce-promise/)
 
 [![NPM](https://nodei.co/npm/debounce-promise.png)](https://nodei.co/npm/debounce-promise/)
 
