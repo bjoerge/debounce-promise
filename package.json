@@ -15,9 +15,9 @@
   },
   "keywords": [
     "promise",
-    "latest",
-    "flatMapLatest",
-    "order"
+    "debounce",
+    "throttle",
+    "ratelimit"
   ],
   "author": "Bjørge Næss",
   "license": "MIT",
