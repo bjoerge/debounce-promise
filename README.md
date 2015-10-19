@@ -1,6 +1,13 @@
 # debounce-promise
 
+[![NPM](https://nodei.co/npm/debounce-promise.png)](https://nodei.co/npm/debounce-promise/)
+
 Create a debounced version of a promise returning function
+
+## Install
+
+    npm i -S debounce-promise
+
 
 ## Usage example
 
