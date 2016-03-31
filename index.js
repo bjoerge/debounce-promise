@@ -18,7 +18,7 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
       }
     }
     clearTimeout(timer)
-    timer = setTimeout(run.bind(null, nextArgs, resolve, reject), wait)
+    timer = setTimeout(run.bind(null, nextArgs, resolve, reject), getWait(wait))
     return pending
   }
 
@@ -33,5 +33,12 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
     reject = null
     pending = null
     timer = null
+  }
+
+  function getWait(_wait) {
+    if (typeof _wait === 'function') {
+      return _wait()
+    }
+    return _wait
   }
 }

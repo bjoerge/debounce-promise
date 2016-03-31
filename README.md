@@ -60,5 +60,7 @@ var saveCycles = debounce(expensiveOperation, 100, {leading: true})
 ## Api
 `debounce(func, [wait=0], [{leading: true|false})`
 
-Returns a debounced version of `func` that delays invoking until after `wait` milliseconds. Set `leading: true` if you 
-want to call `func` immediately and use the value from the first call for all subsequent promises
+Returns a debounced version of `func` that delays invoking until after `wait` milliseconds. Set `leading: true` if you
+want to call `func` immediately and use the value from the first call for all subsequent promises.
+
+Supports passing a function as the `wait` parameter, which provides a way to lazily or dynamically define a wait timeout.
