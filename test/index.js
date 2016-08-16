@@ -28,6 +28,14 @@ test('do not call the given function repeatedly', async t => {
   t.equal(callCount, 1)
 })
 
+test('do not call the given function again after the timeout when leading=true', async t => {
+  let callCount = 0
+  const debounced = debounce(async () => callCount++, 100, {leading: true})
+  await* [1, 2, 3, 4].map(debounced)
+  await sleep(200)
+  t.equal(callCount, 1)
+})
+
 test('waits until the wait time has passed', async t => {
   let callCount = 0
   const debounced = debounce(async () => callCount++, 10)
@@ -62,4 +70,31 @@ test('calls the given function again if wait time has passed', async t => {
 
   await sleep(20)
   t.equal(callCount, 2)
+})
+
+test('maintains the context of the original function', async t => {
+  const context = {
+    foo: 1,
+    debounced: debounce(async function () {
+      await this.foo++
+    }, 10)
+  }
+
+  context.debounced()
+
+  await sleep(20)
+  t.equal(context.foo, 2)
+})
+
+test('maintains the context of the original function when leading=true', async t => {
+  const context = {
+    foo: 1,
+    debounced: debounce(async function () {
+      await this.foo++
+    }, 10, {leading: true})
+  }
+
+  await context.debounced()
+
+  t.equal(context.foo, 2)
 })

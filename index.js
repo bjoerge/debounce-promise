@@ -6,24 +6,26 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
   let reject
   let timer
   return function (...args) {
+    let onTimeout = clear
     nextArgs = args
-    if (!pending) {
-      if (leading) {
-        pending = fn(...nextArgs)
-      } else {
+    if (!leading) {
+      if (!pending) {
         pending = new Promise((_resolve, _reject) => {
           resolve = _resolve
           reject = _reject
         })
       }
+      onTimeout = run.bind(this, nextArgs, resolve, reject)
+    } else if (!pending) {
+      pending = fn.apply(this, nextArgs)
     }
     clearTimeout(timer)
-    timer = setTimeout(run.bind(null, nextArgs, resolve, reject), getWait(wait))
+    timer = setTimeout(onTimeout, getWait(wait))
     return pending
   }
 
   function run(_nextArgs, _resolve, _reject) {
-    fn(..._nextArgs).then(_resolve, _reject)
+    fn.apply(this, _nextArgs).then(_resolve, _reject)
     clear()
   }
 
