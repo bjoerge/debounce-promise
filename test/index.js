@@ -71,3 +71,30 @@ test('calls the given function again if wait time has passed', async t => {
   await sleep(20)
   t.equal(callCount, 2)
 })
+
+test('maintains the context of the original function', async t => {
+  const context = {
+    foo: 1,
+    debounced: debounce(async function () {
+      await this.foo++
+    }, 10)
+  }
+
+  context.debounced()
+
+  await sleep(20)
+  t.equal(context.foo, 2)
+})
+
+test('maintains the context of the original function when leading=true', async t => {
+  const context = {
+    foo: 1,
+    debounced: debounce(async function () {
+      await this.foo++
+    }, 10, {leading: true})
+  }
+
+  await context.debounced()
+
+  t.equal(context.foo, 2)
+})
