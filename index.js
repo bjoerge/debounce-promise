@@ -15,9 +15,9 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
           reject = _reject
         })
       }
-      onTimeout = run.bind(null, nextArgs, resolve, reject)
+      onTimeout = run.bind(this, nextArgs, resolve, reject)
     } else if (!pending) {
-      pending = fn(...nextArgs)
+      pending = fn.apply(this, nextArgs)
     }
     clearTimeout(timer)
     timer = setTimeout(onTimeout, getWait(wait))
@@ -25,7 +25,7 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
   }
 
   function run(_nextArgs, _resolve, _reject) {
-    fn(..._nextArgs).then(_resolve, _reject)
+    fn.apply(this, _nextArgs).then(_resolve, _reject)
     clear()
   }
 
