@@ -7,9 +7,11 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
   let timer
   return function (...args) {
     nextArgs = args
+    let onTimeout = run.bind(this, nextArgs, resolve, reject)
     if (!pending) {
       if (leading) {
         pending = fn.apply(this, nextArgs)
+        onTimeout = clear
       } else {
         pending = new Promise((_resolve, _reject) => {
           resolve = _resolve
@@ -18,7 +20,7 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
       }
     }
     clearTimeout(timer)
-    timer = setTimeout(run.bind(this, nextArgs, resolve, reject), getWait(wait))
+    timer = setTimeout(onTimeout, getWait(wait))
     return pending
   }
 

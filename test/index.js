@@ -28,6 +28,22 @@ test('do not call the given function repeatedly', async t => {
   t.equal(callCount, 1)
 })
 
+test('does not call the given function again after the timeout when leading=true if executed only once', async t => {
+  let callCount = 0
+  const debounced = debounce(async () => callCount++, 100, {leading: true})
+  await debounced()
+  await sleep(200)
+  t.equal(callCount, 1)
+})
+
+test('calls the given function again after the timeout when leading=true if executed multiple times', async t => {
+  let callCount = 0
+  const debounced = debounce(async () => callCount++, 100, {leading: true})
+  await* [1, 2, 3, 4].map(debounced)
+  await sleep(200)
+  t.equal(callCount, 2)
+})
+
 test('waits until the wait time has passed', async t => {
   let callCount = 0
   const debounced = debounce(async () => callCount++, 10)
