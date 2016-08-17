@@ -9,7 +9,7 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
     nextArgs = args
     if (!pending) {
       if (leading) {
-        pending = fn(...nextArgs)
+        pending = fn.apply(this, nextArgs)
       } else {
         pending = new Promise((_resolve, _reject) => {
           resolve = _resolve
@@ -18,12 +18,12 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
       }
     }
     clearTimeout(timer)
-    timer = setTimeout(run.bind(null, nextArgs, resolve, reject), getWait(wait))
+    timer = setTimeout(run.bind(this, nextArgs, resolve, reject), getWait(wait))
     return pending
   }
 
   function run(_nextArgs, _resolve, _reject) {
-    fn(..._nextArgs).then(_resolve, _reject)
+    fn.apply(this, _nextArgs).then(_resolve, _reject)
     clear()
   }
 
