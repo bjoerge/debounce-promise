@@ -16,6 +16,7 @@ export default function debounce(fn, wait = 0, {leading = false} = {}) {
         pending = new Promise((_resolve, _reject) => {
           resolve = _resolve
           reject = _reject
+          onTimeout = run.bind(this, nextArgs, resolve, reject)
         })
       }
     }
