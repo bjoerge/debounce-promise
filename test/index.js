@@ -5,6 +5,14 @@ import debounce from '../index'
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+test('returns the result of a single operation ', async t => {
+  const debounced = debounce(async (value) => value, 100)
+  const promise = debounced('foo')
+  const result = await promise
+
+  t.equal(result, 'foo')
+})
+
 test('returns the result of the latest operation ', async t => {
   const debounced = debounce(async (value) => value, 100)
   const promises = ['foo', 'bar', 'baz', 'qux'].map(debounced)
