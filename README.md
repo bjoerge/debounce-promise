@@ -19,9 +19,9 @@ function expensiveOperation(value) {
   return Promise.resolve(value)
 }
 
-var saveCycles = debounce(expensiveOperation, 100)
+var saveCycles = debounce(expensiveOperation, 100);
 
-;[1,2,3,4].forEach(function(num) {
+[1,2,3,4].forEach(function(num) {
   return saveCycles('call no #' + num).then(function(value) {
     console.log(value)
   })
