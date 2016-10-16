@@ -24,8 +24,8 @@ function expensiveOperation(value) {
 
 var saveCycles = debounce(expensiveOperation, 100);
 
-[1,2,3,4].forEach(function(num) {
-  return saveCycles('call no #' + num).then(function(value) {
+[1, 2, 3, 4].forEach(num => {
+  return saveCycles('call no #' + num).then(value => {
     console.log(value)
   })
 })
@@ -48,8 +48,8 @@ function expensiveOperation(value) {
 
 var saveCycles = debounce(expensiveOperation, 100, {leading: true});
 
-[1,2,3,4].forEach(function(num) {
-  return saveCycles('call no #' + num).then(function(value) {
+[1, 2, 3, 4].forEach(num => {
+  return saveCycles('call no #' + num).then(value => {
     console.log(value)
   })
 })
@@ -60,10 +60,37 @@ var saveCycles = debounce(expensiveOperation, 100, {leading: true});
 //=> call no #1
 ```
 
-## Api
-`debounce(func, [wait=0], [{leading: true|false})`
+### With accumulate=true
 
-Returns a debounced version of `func` that delays invoking until after `wait` milliseconds. Set `leading: true` if you
+```js
+var debounce = require('debounce-promise')
+
+function squareValues (values) {
+  return Promise.all(values.map(val => val * val))
+}
+
+var square = debounce(squareValues, 100, {accumulate: true});
+
+[1, 2, 3, 4].forEach(num => {
+  return square(num).then(value => {
+    console.log(value)
+  })
+})
+
+//=> 1
+//=> 4
+//=> 9
+//=> 16
+```
+
+## Api
+`debounce(func, [wait=0], [{leading: true|false, accumulate: true|false})`
+
+Returns a debounced version of `func` that delays invoking until after `wait` milliseconds.
+
+Set `leading: true` if you
 want to call `func` immediately and use the value from the first call for all subsequent promises.
+
+Set `accumulate: true` if you want the debounced function to be called with an array of all the arguments received while waiting.
 
 Supports passing a function as the `wait` parameter, which provides a way to lazily or dynamically define a wait timeout.

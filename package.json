@@ -17,6 +17,8 @@
   },
   "keywords": [
     "promise",
+    "batch",
+    "accumulate",
     "debounce",
     "throttle",
     "ratelimit"

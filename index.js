@@ -1,28 +1,40 @@
 /* global setTimeout, clearTimeout */
-export default function debounce (fn, wait = 0, {leading = false} = {}) {
-  let nextArgs
+export default function debounce (fn, wait = 0, {leading = false, accumulate = false} = {}) {
+  let nextArgs = []
   let pending
   let timer
-  return function (...args) {
-    nextArgs = args
+  return function debounced (...args) {
+    const nextIdx = nextArgs.length
+    nextArgs[nextIdx] = args
     let onTimeout
+    let wasLeading = false
     if (pending) {
-      onTimeout = run.bind(this, nextArgs, pending)
+      onTimeout = callOriginal.bind(this, nextArgs, pending)
     } else {
       pending = defer()
-      onTimeout = run.bind(this, nextArgs, pending)
+      onTimeout = callOriginal.bind(this, nextArgs, pending)
       if (leading) {
         onTimeout()
+        nextArgs = []
         onTimeout = clear
+        wasLeading = true
       }
     }
     clearTimeout(timer)
     timer = setTimeout(onTimeout, getWait(wait))
+    if (accumulate) {
+      const _pending = pending
+      if (wasLeading) {
+        pending = defer()
+      }
+      return _pending.promise.then(res => res[nextIdx])
+    }
     return pending.promise
   }
 
-  function run (_nextArgs, deferred) {
-    fn.apply(this, _nextArgs).then(v => {
+  function callOriginal (args, deferred) {
+    const returnValue = accumulate ? fn.call(this, args) : fn.apply(this, args[args.length - 1])
+    returnValue.then(v => {
       deferred.resolve(v)
       clear()
     }, err => {
@@ -32,7 +44,7 @@ export default function debounce (fn, wait = 0, {leading = false} = {}) {
   }
 
   function clear () {
-    nextArgs = null
+    nextArgs = []
     pending = null
     timer = null
   }
