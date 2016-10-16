@@ -2,9 +2,10 @@
 import {test} from 'tap'
 import debounce from '../index'
 
-function sleep(ms) {
+function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+
 test('returns the result of a single operation ', async t => {
   const debounced = debounce(async (value) => value, 100)
   const promise = debounced('foo')
@@ -16,7 +17,7 @@ test('returns the result of a single operation ', async t => {
 test('returns the result of the latest operation ', async t => {
   const debounced = debounce(async (value) => value, 100)
   const promises = ['foo', 'bar', 'baz', 'qux'].map(debounced)
-  const results = await* promises
+  const results = await Promise.all(promises)
 
   t.deepEqual(results, ['qux', 'qux', 'qux', 'qux'])
 })
@@ -24,7 +25,7 @@ test('returns the result of the latest operation ', async t => {
 test('if leading=true, the value from the first promise is used', async t => {
   const debounced = debounce(async (value) => value, 100, {leading: true})
   const promises = ['foo', 'bar', 'baz', 'qux'].map(debounced)
-  const results = await* promises
+  const results = await Promise.all(promises)
 
   t.deepEqual(results, ['foo', 'foo', 'foo', 'foo'])
 })
@@ -32,7 +33,7 @@ test('if leading=true, the value from the first promise is used', async t => {
 test('do not call the given function repeatedly', async t => {
   let callCount = 0
   const debounced = debounce(async () => callCount++, 100)
-  await* [1, 2, 3, 4].map(debounced)
+  await Promise.all([1, 2, 3, 4].map(debounced))
   t.equal(callCount, 1)
 })
 
@@ -47,7 +48,7 @@ test('does not call the given function again after the timeout when leading=true
 test('calls the given function again after the timeout when leading=true if executed multiple times', async t => {
   let callCount = 0
   const debounced = debounce(async () => callCount++, 100, {leading: true})
-  await* [1, 2, 3, 4].map(debounced)
+  await Promise.all([1, 2, 3, 4].map(debounced))
   await sleep(200)
   t.equal(callCount, 2)
 })

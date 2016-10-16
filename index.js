@@ -1,47 +1,55 @@
 /* global setTimeout, clearTimeout */
-export default function debounce(fn, wait = 0, {leading = false} = {}) {
+export default function debounce (fn, wait = 0, {leading = false} = {}) {
   let nextArgs
   let pending
-  let resolve
-  let reject
   let timer
   return function (...args) {
     nextArgs = args
-    let onTimeout = run.bind(this, nextArgs, resolve, reject)
-    if (!pending) {
+    let onTimeout
+    if (pending) {
+      onTimeout = run.bind(this, nextArgs, pending)
+    } else {
+      pending = defer()
+      onTimeout = run.bind(this, nextArgs, pending)
       if (leading) {
-        pending = fn.apply(this, nextArgs)
+        onTimeout()
         onTimeout = clear
-      } else {
-        pending = new Promise((_resolve, _reject) => {
-          resolve = _resolve
-          reject = _reject
-          onTimeout = run.bind(this, nextArgs, resolve, reject)
-        })
       }
     }
     clearTimeout(timer)
     timer = setTimeout(onTimeout, getWait(wait))
-    return pending
+    return pending.promise
   }
 
-  function run(_nextArgs, _resolve, _reject) {
-    fn.apply(this, _nextArgs).then(_resolve, _reject)
-    clear()
+  function run (_nextArgs, deferred) {
+    fn.apply(this, _nextArgs).then(v => {
+      deferred.resolve(v)
+      clear()
+    }, err => {
+      deferred.reject(err)
+      clear()
+    })
   }
 
-  function clear() {
+  function clear () {
     nextArgs = null
-    resolve = null
-    reject = null
     pending = null
     timer = null
   }
 
-  function getWait(_wait) {
+  function getWait (_wait) {
     if (typeof _wait === 'function') {
       return _wait()
     }
     return _wait
   }
+}
+
+function defer () {
+  const deferred = {}
+  deferred.promise = new Promise((resolve, reject) => {
+    deferred.resolve = resolve
+    deferred.reject = reject
+  })
+  return deferred
 }

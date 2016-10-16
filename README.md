@@ -1,4 +1,7 @@
-# debounce-promise [![Build Status](https://travis-ci.org/bjoerge/debounce-promise.svg)](https://travis-ci.org/bjoerge/debounce-promise)
+# debounce-promise
+
+[![Build Status](https://travis-ci.org/bjoerge/debounce-promise.svg)](https://travis-ci.org/bjoerge/debounce-promise)
+[![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 [![NPM](https://nodei.co/npm/debounce-promise.png)](https://nodei.co/npm/debounce-promise/)
 
