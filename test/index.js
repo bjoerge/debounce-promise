@@ -160,3 +160,56 @@ test('accumulate works with leading=true', async t => {
   t.equal(await two, 4)
   t.equal(await three, 9)
 })
+
+test('calling again when function is "cold", but previous promise still pending', async t => {
+  const calls = []
+  async function slow (id, wait) {
+    calls.push(id)
+    await sleep(wait)
+    return id
+  }
+
+  const slowDebounced = debounce(slow, 20)
+
+  // this is fast
+  slowDebounced('first', 10)
+
+  // takes much longer time to finish, but that shouldn't matter
+  slowDebounced('second', 200)
+
+  await sleep(100)
+  // fn is now cold again, but previous ('second') still in progress
+  const thirdPromise = slowDebounced('third', 10) // hot
+  const fourth = await slowDebounced('fourth', 0)  // hot
+
+  t.same(await thirdPromise, 'fourth')
+  t.same(fourth, 'fourth')
+  t.same(calls, ['second', 'fourth'])
+})
+
+test('calling again when function is "cold", but previous promise still pending, leading=true', async t => {
+  const calls = []
+  async function slow (id, wait) {
+    calls.push(id)
+    await sleep(wait)
+    return id
+  }
+
+  const slowDebounced = debounce(slow, 20, {leading: true})
+
+  // this is fast
+  slowDebounced('first', 10)
+
+  // takes much longer time to finish, but that shouldn't matter
+  slowDebounced('second', 200)
+
+  await sleep(100)
+
+  // fn is now cold again, but previous ('second') still in progress
+  const thirdPromise = slowDebounced('third', 10) // hot again, on leading edge, so should resolve to third
+  const fourth = await slowDebounced('fourth', 0)  // hot, should not call but resolve with 'third'
+
+  t.same(await thirdPromise, 'third')
+  t.same(fourth, 'third')
+  t.same(calls, ['first', 'second', 'third'])
+})
