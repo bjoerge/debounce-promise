@@ -1,5 +1,5 @@
 /* global setTimeout, clearTimeout */
-export default function debounce (fn, wait = 0, {leading = false, accumulate = false} = {}) {
+module.exports = function debounce (fn, wait = 0, {leading = false, accumulate = false} = {}) {
   let nextArgs = []
   let pending
   let timer
