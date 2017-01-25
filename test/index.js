@@ -187,6 +187,29 @@ test('calling again when function is "cold", but previous promise still pending'
   t.same(calls, ['second', 'fourth'])
 })
 
+test('calling again an expensive promise when function is "cold", but previous expensive promise still pending', async t => {
+  const calls = []
+  async function slow (id, wait) {
+    calls.push(id)
+    await sleep(wait)
+    return id
+  }
+
+  const slowDebounced = debounce(slow, 20)
+
+  // takes lots of time to finish, but that shouldn't matter
+  slowDebounced('first', 200)
+
+  await sleep(100)
+  // fn is now cold again, but previous ('first') still in progress
+  const secondPromise = slowDebounced('second', 10) // hot
+  const third = await slowDebounced('third', 200)  // hot and should finish after 'first'
+
+  t.same(await secondPromise, 'third')
+  t.same(third, 'third')
+  t.same(calls, ['first', 'third'])
+})
+
 test('calling again when function is "cold", but previous promise still pending, leading=true', async t => {
   const calls = []
   async function slow (id, wait) {

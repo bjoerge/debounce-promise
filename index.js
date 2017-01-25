@@ -34,12 +34,19 @@ module.exports = function debounce (fn, wait = 0, {leading = false, accumulate =
 
   function callOriginal (args, deferred) {
     const returnValue = accumulate ? fn.call(this, args) : fn.apply(this, args[args.length - 1])
+    if (!leading) {
+      clear()
+    }
     returnValue.then(v => {
       deferred.resolve(v)
-      clear()
+      if (leading) {
+        clear()
+      }
     }, err => {
       deferred.reject(err)
-      clear()
+      if (leading) {
+        clear()
+      }
     })
   }
 
