@@ -66,12 +66,18 @@ test('waits until the wait time has passed', async t => {
 
 test('supports passing function as wait parameter', async t => {
   let callCount = 0
-  const debounced = debounce(async () => callCount++, () => 10)
+  let getWaitCallCount = 0
+  const debounced = debounce(async () => callCount++, () => {
+    getWaitCallCount++
+    return 100
+  })
   debounced()
   debounced()
   debounced()
+  await sleep(90)
   t.equal(callCount, 0)
   await sleep(20)
+  t.equal(getWaitCallCount, 1)
   t.equal(callCount, 1)
 })
 
