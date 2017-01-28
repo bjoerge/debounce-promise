@@ -1,60 +1,57 @@
 /* global setTimeout, clearTimeout */
-module.exports = function debounce (fn, wait = 0, {leading = false, accumulate = false} = {}) {
-  let nextArgs = []
-  let pending
+
+module.exports = function debounce (fn, wait = 0, options = {}) {
+  let lastCallAt
+  let deferred
   let timer
+  let pendingArgs = []
   return function debounced (...args) {
-    const nextIdx = nextArgs.length
-    nextArgs[nextIdx] = args
-    let onTimeout
-    let wasLeading = false
-    if (pending) {
-      onTimeout = callOriginal.bind(this, nextArgs, pending)
+    const currentWait = getWait(wait)
+    const currentTime = new Date().getTime()
+
+    const isCold = !lastCallAt || (currentTime - lastCallAt) > currentWait
+
+    lastCallAt = currentTime
+
+    if (isCold && options.leading) {
+      return options.accumulate ? fn.call(this, [args]).then(result => result[0]) : fn.call(this, ...args)
+    }
+
+    if (deferred) {
+      clearTimeout(timer)
     } else {
-      pending = defer()
-      onTimeout = callOriginal.bind(this, nextArgs, pending)
-      if (leading) {
-        onTimeout()
-        nextArgs = []
-        onTimeout = clear
-        wasLeading = true
-      }
+      deferred = defer()
     }
+
+    pendingArgs.push(args)
+    timer = setTimeout(flush.bind(this), currentWait)
+
+    if (options.accumulate) {
+      const argsIndex = pendingArgs.length - 1
+      return deferred.promise.then(results => results[argsIndex])
+    }
+
+    return deferred.promise
+  }
+
+  function flush () {
+    const thisDeferred = deferred
     clearTimeout(timer)
-    timer = setTimeout(onTimeout, getWait(wait))
-    if (accumulate) {
-      const _pending = pending
-      if (wasLeading) {
-        pending = defer()
-      }
-      return _pending.promise.then(res => res[nextIdx])
+    if (options.accumulate) {
+      fn.call(this, pendingArgs)
+        .then(res => thisDeferred.resolve(res), err => thisDeferred.reject(err))
+    } else {
+      fn.apply(this, pendingArgs[pendingArgs.length - 1])
+        .then(res => thisDeferred.resolve(res), err => thisDeferred.reject(err))
     }
-    return pending.promise
-  }
 
-  function callOriginal (args, deferred) {
-    const returnValue = accumulate ? fn.call(this, args) : fn.apply(this, args[args.length - 1])
-    returnValue.then(v => {
-      deferred.resolve(v)
-      clear()
-    }, err => {
-      deferred.reject(err)
-      clear()
-    })
+    pendingArgs = []
+    deferred = null
   }
+}
 
-  function clear () {
-    nextArgs = []
-    pending = null
-    timer = null
-  }
-
-  function getWait (_wait) {
-    if (typeof _wait === 'function') {
-      return _wait()
-    }
-    return _wait
-  }
+function getWait (wait) {
+  return (typeof wait === 'function') ? wait() : wait
 }
 
 function defer () {

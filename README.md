@@ -89,8 +89,35 @@ var square = debounce(squareValues, 100, {accumulate: true});
 Returns a debounced version of `func` that delays invoking until after `wait` milliseconds.
 
 Set `leading: true` if you
-want to call `func` immediately and use the value from the first call for all subsequent promises.
+want to call `func` and return its promise immediately.
 
 Set `accumulate: true` if you want the debounced function to be called with an array of all the arguments received while waiting.
 
 Supports passing a function as the `wait` parameter, which provides a way to lazily or dynamically define a wait timeout.
+
+
+## Example timeline illustration
+
+```js
+function refresh() {
+  return fetch('/my/api/something')
+}
+const debounced = debounce(refresh, 100)
+```
+
+```
+time (ms) ->   0 ---  10  ---  50  ---  100 ---
+-----------------------------------------------
+debounced()    | --- P(1) --- P(1) --- P(1) ---
+refresh()      | --------------------- P(1) ---
+```
+
+```js
+const debounced = debounce(refresh, 100, {leading: true})
+```
+```
+time (ms) ->   0 ---  10  ---  50  ---  100 ---  110 ---
+--------------------------------------------------------
+debounced()    | --- P(1) --- P(2) --- P(2) --- P(2) ---
+refresh()      | --- P(1) --------------------- P(2) ---
+```

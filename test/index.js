@@ -27,7 +27,7 @@ test('if leading=true, the value from the first promise is used', async t => {
   const promises = ['foo', 'bar', 'baz', 'qux'].map(debounced)
   const results = await Promise.all(promises)
 
-  t.deepEqual(results, ['foo', 'foo', 'foo', 'foo'])
+  t.deepEqual(results, ['foo', 'qux', 'qux', 'qux'])
 })
 
 test('do not call the given function repeatedly', async t => {
@@ -77,7 +77,7 @@ test('supports passing function as wait parameter', async t => {
   await sleep(90)
   t.equal(callCount, 0)
   await sleep(20)
-  t.equal(getWaitCallCount, 1)
+  t.inequal(getWaitCallCount, 0)
   t.equal(callCount, 1)
 })
 
@@ -122,7 +122,7 @@ test('maintains the context of the original function when leading=true', async t
   t.equal(context.foo, 2)
 })
 
-test('calls debounced function with accumulates arguments', async t => {
+test('calls debounced function and accumulates arguments', async t => {
   function squareBatch (args) {
     t.deepEqual(args, [[1], [2], [3]])
     return Promise.resolve(args.map(arg => arg * arg))
@@ -165,57 +165,4 @@ test('accumulate works with leading=true', async t => {
   t.equal(await one, 1)
   t.equal(await two, 4)
   t.equal(await three, 9)
-})
-
-test('calling again when function is "cold", but previous promise still pending', async t => {
-  const calls = []
-  async function slow (id, wait) {
-    calls.push(id)
-    await sleep(wait)
-    return id
-  }
-
-  const slowDebounced = debounce(slow, 20)
-
-  // this is fast
-  slowDebounced('first', 10)
-
-  // takes much longer time to finish, but that shouldn't matter
-  slowDebounced('second', 200)
-
-  await sleep(100)
-  // fn is now cold again, but previous ('second') still in progress
-  const thirdPromise = slowDebounced('third', 10) // hot
-  const fourth = await slowDebounced('fourth', 0)  // hot
-
-  t.same(await thirdPromise, 'fourth')
-  t.same(fourth, 'fourth')
-  t.same(calls, ['second', 'fourth'])
-})
-
-test('calling again when function is "cold", but previous promise still pending, leading=true', async t => {
-  const calls = []
-  async function slow (id, wait) {
-    calls.push(id)
-    await sleep(wait)
-    return id
-  }
-
-  const slowDebounced = debounce(slow, 20, {leading: true})
-
-  // this is fast
-  slowDebounced('first', 10)
-
-  // takes much longer time to finish, but that shouldn't matter
-  slowDebounced('second', 200)
-
-  await sleep(100)
-
-  // fn is now cold again, but previous ('second') still in progress
-  const thirdPromise = slowDebounced('third', 10) // hot again, on leading edge, so should resolve to third
-  const fourth = await slowDebounced('fourth', 0)  // hot, should not call but resolve with 'third'
-
-  t.same(await thirdPromise, 'third')
-  t.same(fourth, 'third')
-  t.same(calls, ['first', 'second', 'third'])
 })
