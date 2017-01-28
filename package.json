@@ -3,6 +3,7 @@
   "version": "3.0.0",
   "description": "Create a debounced version of a promise returning function",
   "main": "dist/index",
+  "runkitExampleFilename": "./example.js",
   "scripts": {
     "test": "tap --node-arg -r --node-arg babel-register --node-arg -r --node-arg babel-polyfill test && npm run lint",
     "lint": "standard | snazzy",

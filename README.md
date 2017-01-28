@@ -55,9 +55,9 @@ var saveCycles = debounce(expensiveOperation, 100, {leading: true});
 })
 
 //=> call no #1
-//=> call no #1
-//=> call no #1
-//=> call no #1
+//=> call no #4
+//=> call no #4
+//=> call no #4
 ```
 
 ### With accumulate=true
