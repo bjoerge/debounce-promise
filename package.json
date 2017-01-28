@@ -1,6 +1,6 @@
 {
   "name": "debounce-promise",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "Create a debounced version of a promise returning function",
   "main": "dist/index",
   "scripts": {
