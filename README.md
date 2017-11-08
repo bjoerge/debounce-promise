@@ -65,8 +65,8 @@ var saveCycles = debounce(expensiveOperation, 100, {leading: true});
 ```js
 var debounce = require('debounce-promise')
 
-function squareValues (values) {
-  return Promise.all(values.map(val => val * val))
+function squareValues (argTuples) {
+  return Promise.all(argTuples.map(args => args[0] * args[0]))
 }
 
 var square = debounce(squareValues, 100, {accumulate: true});
