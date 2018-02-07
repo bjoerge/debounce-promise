@@ -37,12 +37,13 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
   function flush () {
     const thisDeferred = deferred
     clearTimeout(timer)
-    if (options.accumulate) {
-      fn.call(this, pendingArgs)
-        .then(res => thisDeferred.resolve(res), err => thisDeferred.reject(err))
-    } else {
-      fn.apply(this, pendingArgs[pendingArgs.length - 1])
-        .then(res => thisDeferred.resolve(res), err => thisDeferred.reject(err))
+
+    const result = options.accumulate
+      ? fn.call(this, pendingArgs)
+      : fn.apply(this, pendingArgs[pendingArgs.length - 1])
+
+    if (result && result.then) {
+      result.then(res => thisDeferred.resolve(res), err => thisDeferred.reject(err))
     }
 
     pendingArgs = []
