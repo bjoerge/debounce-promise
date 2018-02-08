@@ -38,13 +38,12 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
     const thisDeferred = deferred
     clearTimeout(timer)
 
-    const result = options.accumulate
-      ? fn.call(this, pendingArgs)
-      : fn.apply(this, pendingArgs[pendingArgs.length - 1])
-
-    if (result && result.then) {
-      result.then(res => thisDeferred.resolve(res), err => thisDeferred.reject(err))
-    }
+    Promise.resolve(
+      options.accumulate
+        ? fn.call(this, pendingArgs)
+        : fn.apply(this, pendingArgs[pendingArgs.length - 1])
+    )
+      .then(thisDeferred.resolve, thisDeferred.reject)
 
     pendingArgs = []
     deferred = null
