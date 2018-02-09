@@ -14,7 +14,9 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
     lastCallAt = currentTime
 
     if (isCold && options.leading) {
-      return options.accumulate ? fn.call(this, [args]).then(result => result[0]) : fn.call(this, ...args)
+      return options.accumulate
+        ? Promise.resolve(fn.call(this, [args])).then(result => result[0])
+        : Promise.resolve(fn.call(this, ...args))
     }
 
     if (deferred) {
