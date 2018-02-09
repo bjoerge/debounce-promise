@@ -122,6 +122,17 @@ test('maintains the context of the original function when leading=true', async t
   t.equal(context.foo, 2)
 })
 
+test('Converts the return value from the producer function to a promise', async t => {
+  let callCount = 0
+  const debounced = debounce(() => ++callCount, 10)
+
+  debounced()
+  debounced()
+  await debounced()
+
+  t.equal(callCount, 1)
+})
+
 test('calls debounced function and accumulates arguments', async t => {
   function squareBatch (args) {
     t.deepEqual(args, [[1], [2], [3]])
@@ -152,6 +163,32 @@ test('accumulate works with leading=true', async t => {
     }
     callNo++
     return Promise.resolve(args.map(arg => arg * arg))
+  }
+
+  const square = debounce(squareBatch, 10, {leading: true, accumulate: true})
+
+  const one = square(1)
+  const two = square(2)
+  const three = square(3)
+
+  await sleep(20)
+
+  t.equal(await one, 1)
+  t.equal(await two, 4)
+  t.equal(await three, 9)
+})
+
+test('accumulate works with non-promise return value', async t => {
+  let callNo = 1
+  function squareBatch (args) {
+    if (callNo === 1) {
+      t.deepEqual(args, [[1]])
+    }
+    if (callNo === 2) {
+      t.deepEqual(args, [[2], [3]])
+    }
+    callNo++
+    return args.map(arg => arg * arg)
   }
 
   const square = debounce(squareBatch, 10, {leading: true, accumulate: true})
