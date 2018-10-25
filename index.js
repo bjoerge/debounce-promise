@@ -1,6 +1,7 @@
 /* global setTimeout, clearTimeout */
 
 module.exports = function debounce (fn, wait = 0, options = {}) {
+  let lastFlushAt
   let lastCallAt
   let deferred
   let timer
@@ -8,6 +9,9 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
   return function debounced (...args) {
     const currentWait = getWait(wait)
     const currentTime = new Date().getTime()
+    if (!lastFlushAt) {
+      lastFlushAt = currentTime
+    }
 
     const isCold = !lastCallAt || (currentTime - lastCallAt) > currentWait
 
@@ -19,6 +23,9 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
         : Promise.resolve(fn.call(this, ...args))
     }
 
+    if (deferred && (currentTime - lastFlushAt) > options.maxWait) {
+      flush()
+    }
     if (deferred) {
       clearTimeout(timer)
     } else {
@@ -37,6 +44,7 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
   }
 
   function flush () {
+    lastFlushAt = new Date().getTime()
     const thisDeferred = deferred
     clearTimeout(timer)
 
