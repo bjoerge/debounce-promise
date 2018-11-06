@@ -23,7 +23,7 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
         : Promise.resolve(fn.call(this, ...args))
     }
 
-    if (deferred && (currentTime - lastFlushAt) > options.maxWait) {
+    if (deferred && (currentTime - lastFlushAt) > getWait(options.maxWait)) {
       flush()
     }
     if (deferred) {
