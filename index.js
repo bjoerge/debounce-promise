@@ -1,7 +1,7 @@
 /* global setTimeout, clearTimeout */
 
 module.exports = function debounce (fn, wait = 0, options = {}) {
-  let lastFlushAt
+  let timeSpendWaiting
   let lastCallAt
   let deferred
   let timer
@@ -9,8 +9,8 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
   return function debounced (...args) {
     const currentWait = getWait(wait)
     const currentTime = new Date().getTime()
-    if (!lastFlushAt) {
-      lastFlushAt = currentTime
+    if (!timeSpendWaiting) {
+      timeSpendWaiting = currentTime
     }
 
     const isCold = !lastCallAt || (currentTime - lastCallAt) > currentWait
@@ -23,9 +23,6 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
         : Promise.resolve(fn.call(this, ...args))
     }
 
-    if (deferred && (currentTime - lastFlushAt) > getWait(options.maxWait)) {
-      flush()
-    }
     if (deferred) {
       clearTimeout(timer)
     } else {
@@ -35,16 +32,20 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
     pendingArgs.push(args)
     timer = setTimeout(flush.bind(this), currentWait)
 
-    if (options.accumulate) {
-      const argsIndex = pendingArgs.length - 1
-      return deferred.promise.then(results => results[argsIndex])
+    let thisDeferred = deferred
+    if ((currentTime - timeSpendWaiting) > getWait(options.maxWait)) {
+      thisDeferred = flush()
     }
 
-    return deferred.promise
+    if (options.accumulate) {
+      const argsIndex = pendingArgs.length - 1
+      return thisDeferred.promise.then(results => results[argsIndex])
+    }
+
+    return thisDeferred.promise
   }
 
   function flush () {
-    lastFlushAt = new Date().getTime()
     const thisDeferred = deferred
     clearTimeout(timer)
 
@@ -57,6 +58,8 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
 
     pendingArgs = []
     deferred = null
+    timeSpendWaiting = null
+    return thisDeferred
   }
 }
 
