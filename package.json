@@ -1,6 +1,6 @@
 {
   "name": "debounce-promise",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Create a debounced version of a promise returning function",
   "main": "dist/index",
   "runkitExampleFilename": "./example.js",
