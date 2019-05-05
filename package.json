@@ -9,7 +9,7 @@
     "lint": "standard | snazzy",
     "compile": "babel index.js --source-maps --out-dir dist",
     "clean": "rimraf dist",
-    "prepublish": "in-publish && npm run compile || not-in-publish",
+    "prepare": "in-publish && npm run compile || not-in-publish",
     "postpublish": "in-publish && npm run clean || not-in-publish"
   },
   "repository": {
