@@ -203,3 +203,37 @@ test('accumulate works with non-promise return value', async t => {
   t.equal(await two, 4)
   t.equal(await three, 9)
 })
+
+test('forces flush on maxWait', async t => {
+  let callCount = 0
+  const debounced = debounce(async () => callCount++, 10, { maxWait: 20 })
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(5)
+  debounced()
+  t.equal(callCount, 1)
+})
+
+test('maxWait splits requests into correct chunks', async t => {
+  let callCount = 0
+  const debounced = debounce(async () => { await sleep(50); callCount++ }, 10, { maxWait: 20 })
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(50)
+
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(5)
+  debounced()
+  await sleep(100)
+  t.equal(callCount, 2)
+})
