@@ -30,7 +30,13 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
 
     if (options.accumulate) {
       const argsIndex = pendingArgs.length - 1
-      return deferred.promise.then(results => results[argsIndex])
+      return deferred.promise.then(results => {
+        if (!results) {
+          return undefined
+        } else {
+          return results[argsIndex]
+        }
+      })
     }
 
     return deferred.promise

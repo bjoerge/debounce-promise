@@ -152,6 +152,20 @@ test('calls debounced function and accumulates arguments', async t => {
   t.equal(await three, 9)
 })
 
+test('accumulate works without result', async t => {
+  let callCount = 0
+  async function doSomethingLessOften (args) {
+    t.deepEqual(args, [[1], [5], [15]])
+    callCount++
+    await sleep(5)
+  }
+
+  const debounced = debounce(doSomethingLessOften, 10, {accumulate: true})
+
+  await Promise.all([1, 5, 15].map(o => debounced(o)))
+  t.equal(callCount, 1)
+})
+
 test('accumulate works with leading=true', async t => {
   let callNo = 1
   function squareBatch (args) {
