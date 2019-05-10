@@ -11,6 +11,7 @@ Create a debounced version of a promise returning function
 
     npm i -S debounce-promise
 
+Typescript user? You need `"esModuleInterop": true` compiler option (probably already set)
 
 ## Usage example
 
