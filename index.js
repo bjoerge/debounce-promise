@@ -37,7 +37,7 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
   }
 
   function flush () {
-    const thisDeferred = deferred
+    const thisDeferred = deferred ? Object.assign(deferred) : null;
     clearTimeout(timer)
 
     Promise.resolve(
