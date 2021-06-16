@@ -37,9 +37,9 @@ tap.test('if leading=true, the value from the first promise is used', async t =>
 
 tap.test('if trailing=false, the value from the first promise is used on subsequent calls and resolves at the same time', async t => {
   const debounced = debounce(async (value) => value, 100, { leading: true, trailing: false })
-  const promises = ['foo', 'bar', 'baz', 'qux'].map(debounced)
+  const promises = ['foo', 'bar', 'baz'].map(debounced)
   const c = setTimeout(() => {
-    throw new Error('Failed resolving within 100ms')
+    throw new Error('Failed resolving within 10ms')
   }, 10)
 
   const date = Date.now()
@@ -47,10 +47,15 @@ tap.test('if trailing=false, the value from the first promise is used on subsequ
   t.equal(Date.now() - date < 2, true)
   await promises[1]
   t.equal(Date.now() - date < 2, true)
-  const results = await Promise.all(promises)
+
   clearTimeout(c)
 
-  t.same(results, ['foo', 'foo', 'foo', 'foo'])
+  await sleep(110)
+  promises.push(debounced('qux'))
+
+  const results = await Promise.all(promises)
+
+  t.same(results, ['foo', 'foo', 'foo', 'qux'])
 })
 
 tap.test('do not call the given function repeatedly', async t => {
