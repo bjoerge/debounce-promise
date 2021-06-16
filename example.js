@@ -17,7 +17,7 @@ function expensiveOperation (value, delay) {
 
 // With leading=true
 {
-  const saveCycles = debounce(expensiveOperation, 100, {leading: true});
+  const saveCycles = debounce(expensiveOperation, 100, { leading: true });
 
   [1, 2, 3, 4].forEach(num => {
     return saveCycles('call no #' + num).then(value => {
@@ -32,7 +32,7 @@ function expensiveOperation (value, delay) {
     return Promise.all(values.map(val => val * val))
   }
 
-  const square = debounce(squareValues, 100, {accumulate: true});
+  const square = debounce(squareValues, 100, { accumulate: true });
 
   [1, 2, 3, 4].forEach(num => {
     return square(num).then(value => {
