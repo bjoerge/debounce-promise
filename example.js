@@ -1,6 +1,6 @@
 const debounce = require('debounce-promise')
 
-function expensiveOperation (value, delay) {
+function expensiveOperation (value) {
   return Promise.resolve(value)
 }
 
@@ -15,9 +15,9 @@ function expensiveOperation (value, delay) {
   })
 }
 
-// With leading=true
+// With leading=true & trailing=false
 {
-  const saveCycles = debounce(expensiveOperation, 100, { leading: true });
+  const saveCycles = debounce(expensiveOperation, 100, { leading: true, trailing: false });
 
   [1, 2, 3, 4].forEach(num => {
     return saveCycles('call no #' + num).then(value => {
