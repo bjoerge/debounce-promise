@@ -60,6 +60,34 @@ var saveCycles = debounce(expensiveOperation, 100, {leading: true});
 //=> call no #4
 ```
 
+### With leading=true and trailing=false
+
+```js
+var debounce = require('debounce-promise')
+
+function expensiveOperation(value) {
+  return Promise.resolve(value)
+}
+
+var saveCycles = debounce(expensiveOperation, 100, {leading: true});
+
+[1, 2, 3].forEach(num => {
+  return saveCycles('call no #' + num).then(value => {
+    console.log(value)
+  })
+})
+setTimeout(() => {
+  saveCycles('call no #' + num).then(value => {
+    console.log(value)
+  })
+}, 110)
+
+//=> call no #1
+//=> call no #1
+//=> call no #1
+//=> call no #4
+```
+
 ### With accumulate=true
 
 ```js
