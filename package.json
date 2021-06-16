@@ -1,5 +1,5 @@
 {
-  "name": "@tofandel/debounce-promise",
+  "name": "debounce-promise",
   "version": "4.0.1",
   "description": "Create a debounced version of a promise returning function",
   "main": "dist/index",
