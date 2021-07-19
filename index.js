@@ -1,10 +1,20 @@
 /* global setTimeout, clearTimeout */
 
-module.exports = function debounce (fn, wait = 0, options = {}) {
+/**
+ *
+ * @param {function} fn
+ * @param {number | function} [wait=0]
+ * @param {Object} [options={ leading: false, trailing: true, accumulate: false }]
+ * @return {(function(...[*]=): (Promise<any>))|*}
+ */
+function debounce (fn, wait = 0, options = {}) {
   let lastCallAt
   let deferred
+  let firstPromise
   let timer
   let pendingArgs = []
+  options = { leading: false, trailing: true, accumulate: false, ...options }
+
   return function debounced (...args) {
     const currentWait = getWait(wait)
     const currentTime = new Date().getTime()
@@ -14,9 +24,10 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
     lastCallAt = currentTime
 
     if (isCold && options.leading) {
-      return options.accumulate
+      firstPromise = options.accumulate
         ? Promise.resolve(fn.call(this, [args])).then(result => result[0])
         : Promise.resolve(fn.call(this, ...args))
+      return firstPromise
     }
 
     if (deferred) {
@@ -25,12 +36,16 @@ module.exports = function debounce (fn, wait = 0, options = {}) {
       deferred = defer()
     }
 
-    pendingArgs.push(args)
-    timer = setTimeout(flush.bind(this), currentWait)
+    if (options.trailing) {
+      pendingArgs.push(args)
+      timer = setTimeout(flush.bind(this), currentWait)
 
-    if (options.accumulate) {
-      const argsIndex = pendingArgs.length - 1
-      return deferred.promise.then(results => results[argsIndex])
+      if (options.accumulate) {
+        const argsIndex = pendingArgs.length - 1
+        return deferred.promise.then(results => results[argsIndex])
+      }
+    } else {
+      return firstPromise
     }
 
     return deferred.promise
@@ -64,3 +79,5 @@ function defer () {
   })
   return deferred
 }
+
+module.exports = debounce

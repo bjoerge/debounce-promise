@@ -1,5 +1,12 @@
 {
   "presets": [
-    "es2015"
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": "last 6 versions, > 0.5%, not dead"
+        }
+      }
+    ]
   ]
 }
