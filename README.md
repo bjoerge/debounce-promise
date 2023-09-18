@@ -1,22 +1,22 @@
-# debounce-promise
+# @tofandel/debounce-promise
 
-[![Build Status](https://travis-ci.org/bjoerge/debounce-promise.svg)](https://travis-ci.org/bjoerge/debounce-promise)
+[![Build Status](https://travis-ci.org/tofandel/@tofandel/debounce-promise.svg)](https://travis-ci.org/tofandel/@tofandel/debounce-promise)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-[![NPM](https://nodei.co/npm/debounce-promise.png)](https://nodei.co/npm/debounce-promise/)
+[![NPM](https://nodei.co/npm/@tofandel/debounce-promise.png)](https://nodei.co/npm/@tofandel/debounce-promise/)
 
 Create a debounced version of a promise returning function
 
 ## Install
 
-    npm i -S debounce-promise
+    npm i -S @tofandel/debounce-promise
 
 
 ## Usage example
 
 ```js
 
-var debounce = require('debounce-promise')
+var debounce = require('@tofandel/debounce-promise')
 
 function expensiveOperation(value) {
   return Promise.resolve(value)
@@ -40,7 +40,7 @@ var saveCycles = debounce(expensiveOperation, 100);
 ### With leading=true
 
 ```js
-var debounce = require('debounce-promise')
+var debounce = require('@tofandel/debounce-promise')
 
 function expensiveOperation(value) {
   return Promise.resolve(value)
@@ -63,7 +63,7 @@ var saveCycles = debounce(expensiveOperation, 100, {leading: true});
 ### With leading=true and trailing=false
 
 ```js
-var debounce = require('debounce-promise')
+var debounce = require('@tofandel/debounce-promise')
 
 function expensiveOperation(value) {
   return Promise.resolve(value)
@@ -91,7 +91,7 @@ setTimeout(() => {
 ### With accumulate=true
 
 ```js
-var debounce = require('debounce-promise')
+var debounce = require('@tofandel/debounce-promise')
 
 function squareValues (argTuples) {
   return Promise.all(argTuples.map(args => args[0] * args[0]))

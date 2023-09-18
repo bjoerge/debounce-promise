@@ -15,7 +15,7 @@ function debounce (fn, wait = 0, options = {}) {
   let pendingArgs = []
   options = { leading: false, trailing: true, accumulate: false, ...options }
 
-  return function debounced (...args) {
+  const ret = function debounced (...args) {
     const currentWait = getWait(wait)
     const currentTime = new Date().getTime()
 
@@ -51,8 +51,13 @@ function debounce (fn, wait = 0, options = {}) {
     return deferred.promise
   }
 
+  function clear () {
+    clearTimeout(timer)
+    pendingArgs = []
+    deferred = null
+  }
+
   function flush () {
-    const thisDeferred = deferred
     clearTimeout(timer)
 
     Promise.resolve(
@@ -60,11 +65,16 @@ function debounce (fn, wait = 0, options = {}) {
         ? fn.call(this, pendingArgs)
         : fn.apply(this, pendingArgs[pendingArgs.length - 1])
     )
-      .then(thisDeferred.resolve, thisDeferred.reject)
+      .then(deferred.resolve, deferred.reject)
 
     pendingArgs = []
     deferred = null
   }
+
+  ret.clear = clear
+  ret.flush = flush
+
+  return ret
 }
 
 function getWait (wait) {

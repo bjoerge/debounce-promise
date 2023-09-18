@@ -92,6 +92,16 @@ tap.test('waits until the wait time has passed', async t => {
   t.equal(callCount, 1)
 })
 
+tap.test('clear', async t => {
+  let callCount = 0
+  const debounced = debounce(async () => callCount++, 10)
+  debounced()
+  debounced.clear()
+  t.equal(callCount, 0)
+  await sleep(20)
+  t.equal(callCount, 0)
+})
+
 tap.test('supports passing function as wait parameter', async t => {
   let callCount = 0
   let getWaitCallCount = 0

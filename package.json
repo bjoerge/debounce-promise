@@ -1,9 +1,8 @@
 {
-  "name": "debounce-promise",
-  "version": "4.0.1",
+  "name": "@tofandel/debounce-promise",
+  "version": "4.1.2",
   "description": "Create a debounced version of a promise returning function",
   "main": "dist/index",
-  "runkitExampleFilename": "./example.js",
   "files": [
     "index.js"
   ],
@@ -18,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bjoerge/debounce-promise.git"
+    "url": "git+https://github.com/tofandel/debounce-promise.git"
   },
   "keywords": [
     "promise",
@@ -31,17 +30,17 @@
   "author": "Bjørge Næss",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bjoerge/debounce-promise/issues"
+    "url": "https://github.com/tofandel/debounce-promise/issues"
   },
-  "homepage": "https://github.com/bjoerge/debounce-promise",
+  "homepage": "https://github.com/tofandel/debounce-promise",
   "devDependencies": {
-    "@babel/cli": "^7.14.5",
-    "@babel/preset-env": "^7.14.5",
-    "eslint": "^7.28.0",
+    "@babel/cli": "^7.22.15",
+    "@babel/preset-env": "^7.22.20",
+    "eslint": "^8.49.0",
     "in-publish": "^2.0.1",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.1",
     "snazzy": "^9.0.0",
-    "standard": "^16.0.3",
-    "tap": "^15.0.9"
+    "standard": "^17.1.0",
+    "tap": "^16.3.8"
   }
 }
