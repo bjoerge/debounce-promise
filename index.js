@@ -52,12 +52,15 @@ function debounce (fn, wait = 0, options = {}) {
   }
 
   function clear () {
-    clearTimeout(timer)
-    pendingArgs = []
+    if (timer) {
+      clearTimeout(timer)
+      pendingArgs = []
+    }
     deferred = null
   }
 
   function flush () {
+    const thisDeferred = deferred
     clearTimeout(timer)
 
     Promise.resolve(
@@ -65,7 +68,7 @@ function debounce (fn, wait = 0, options = {}) {
         ? fn.call(this, pendingArgs)
         : fn.apply(this, pendingArgs[pendingArgs.length - 1])
     )
-      .then(deferred.resolve, deferred.reject)
+      .then(thisDeferred.resolve, thisDeferred.reject)
 
     pendingArgs = []
     deferred = null
